@@ -146,6 +146,7 @@ function updateChart() {
   const min = 0;
   const max = state.chartMode === "entropy" ? Math.max(4.4, Math.ceil(maxValue * 1.15 * 10) / 10) : Math.max(45, Math.ceil(maxValue / 5) * 5);
   const range = max - min || 1;
+  const timeMax = Math.max(1, Math.ceil(state.elapsed));
   ctx.font = "9px DM Mono, monospace"; ctx.lineWidth = 1; ctx.fillStyle = "#5f7489";
   for (let i = 0; i <= 4; i++) {
     const y = pad.top + chartH * i / 4;
@@ -154,8 +155,16 @@ function updateChart() {
     const tick = max * (1 - i / 4);
     ctx.fillText(state.chartMode === "entropy" ? tick.toFixed(1) : `${tick.toFixed(0)}°`, 7, y + 3);
   }
+  ctx.textAlign = "center";
+  for (let i = 0; i <= 4; i++) {
+    const x = pad.left + chartW * i / 4;
+    ctx.strokeStyle = "rgba(142, 169, 192, .08)";
+    ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, pad.top + chartH); ctx.stroke();
+    ctx.fillText(`${(timeMax * i / 4).toFixed(timeMax < 10 ? 1 : 0)}s`, x, height - 7);
+  }
+  ctx.textAlign = "start";
   if (!data.length) return;
-  const drawLine = (key, color, dashed = false) => { ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = dashed ? 1 : 2; ctx.setLineDash(dashed ? [4, 5] : []); data.forEach((item, index) => { const x = pad.left + (index / Math.max(1, data.length - 1)) * chartW; const y = pad.top + chartH - ((item[key] - min) / range) * chartH; index ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.setLineDash([]); };
+  const drawLine = (key, color, dashed = false) => { ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = dashed ? 1 : 2; ctx.setLineDash(dashed ? [4, 5] : []); data.forEach((item, index) => { const x = pad.left + ((item.t || 0) / timeMax) * chartW; const y = pad.top + chartH - ((item[key] - min) / range) * chartH; index ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.setLineDash([]); };
   if (state.chartMode === "entropy") { drawLine("life", "#59d6bf"); drawLine("object", "#f2b85f"); drawLine("lifeTotal", "#a28eff", true); drawLine("objectTotal", "#ef8270", true); } else { drawLine("lifeTemp", "#59d6bf"); drawLine("objectTemp", "#f2b85f"); }
 }
 
