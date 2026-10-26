@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08111f" />
+    <title>열린계의 엔트로피 실험실</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div>
+            <p class="eyebrow">PHYSICS / OPEN SYSTEMS</p>
+            <h1>열린계의 엔트로피 실험실</h1>
+          </div>
+        </div>
+        <div class="live-status"><i></i><span id="liveLabel">LIVE MODEL</span><b id="elapsedLabel">00:00</b></div>
+      </header>
+
+      <main>
+        <section class="hero-section">
+          <div>
+            <p class="kicker">ENTROPY / HOMEOSTASIS</p>
+            <h2>질서는 사라지지 않는다.<br /><em>흘러나간다.</em></h2>
+            <p class="hero-copy">외부의 열과 엔트로피를 바꾸며, 일반 물체와 생명체가 어떻게 다른 방식으로 평형에 접근하는지 관찰해 보세요.</p>
+          </div>
+          <div class="equation-card">
+            <div class="equation-label">열평형의 방향</div>
+            <div class="equation">ΔS<sub>total</sub> = ΔS<sub>1</sub> + ΔS<sub>2</sub> <span>≥ 0</span></div>
+            <p>고립된 전체의 엔트로피는 감소하지 않습니다. 생명체는 내부 엔트로피를 낮게 유지하는 대신, 더 많은 엔트로피를 주변으로 내보냅니다.</p>
+          </div>
+        </section>
+
+        <section class="lab-grid">
+          <aside class="control-panel panel">
+            <div class="panel-heading">
+              <div>
+                <p class="section-index">01 / INPUT</p>
+                <h3>외부 조건</h3>
+              </div>
+              <span class="signal-dot"></span>
+            </div>
+
+            <div class="segmented" role="group" aria-label="외부 입력 종류">
+              <button class="segment active" data-mode="heat">열 유입 <span>Q</span></button>
+              <button class="segment" data-mode="entropy">엔트로피 유입 <span>S</span></button>
+            </div>
+
+            <div class="control-block">
+              <div class="control-label-row">
+                <label for="inputSlider" id="inputLabel">외부 열 유입</label>
+                <output id="inputValue">+80 W</output>
+              </div>
+              <input id="inputSlider" type="range" min="-80" max="180" value="80" step="1" />
+              <div class="range-hints"><span>냉각</span><span>가열</span></div>
+            </div>
+
+            <div class="control-block">
+              <div class="control-label-row">
+                <label for="homeostasisSlider">생명체 항상성</label>
+                <output id="homeostasisValue">78%</output>
+              </div>
+              <input id="homeostasisSlider" type="range" min="0" max="100" value="78" step="1" />
+              <div class="range-hints"><span>무방비</span><span>강한 조절</span></div>
+            </div>
+
+            <div class="control-block compact-control">
+              <div class="control-label-row"><label for="speedSlider">시간 배속</label><output id="speedValue">1.0×</output></div>
+              <input id="speedSlider" type="range" min="0.25" max="3" value="1" step="0.25" />
+            </div>
+
+            <div class="button-row">
+              <button class="primary-button" id="playButton"><span class="button-icon">Ⅱ</span> 일시정지</button>
+              <button class="ghost-button" id="resetButton">초기화</button>
+            </div>
+
+            <div class="control-note">
+              <span class="note-icon">↗</span>
+              <p>항상성 수치가 높을수록 생명체 내부의 엔트로피 변화는 작아지고, 주변으로 배출되는 몫은 커집니다.</p>
+            </div>
+          </aside>
+
+          <section class="simulation-panel panel">
+            <div class="panel-heading stage-heading">
+              <div>
+                <p class="section-index">02 / SYSTEM VIEW</p>
+                <h3>에너지와 엔트로피의 흐름</h3>
+              </div>
+              <div class="stage-legend"><span><i class="life-key"></i>생명체</span><span><i class="object-key"></i>일반 물체</span></div>
+            </div>
+
+            <div class="system-stage" id="systemStage">
+              <div class="ambient-orbit orbit-one"></div>
+              <div class="ambient-orbit orbit-two"></div>
+              <div class="input-beam"><span>외부</span><i></i><b id="beamValue">+80 W</b></div>
+
+              <article class="system-node life-node" id="lifeNode">
+                <div class="node-topline"><span class="node-tag">OPEN SYSTEM</span><span class="node-state" id="lifeState">조절 중</span></div>
+                <div class="node-core life-core"><span class="pulse-ring"></span><span class="core-symbol">♧</span></div>
+                <h4>생명체</h4>
+                <p>호르몬 · 항상성 · 대사</p>
+                <div class="node-meter"><span>내부 엔트로피</span><b id="lifeNodeEntropy">2.40</b><div><i id="lifeMeter"></i></div></div>
+              </article>
+
+              <div class="exchange-arrow"><span id="exchangeLabel">열 입력</span><i>→</i><small id="exchangeSub">feedback</small></div>
+
+              <article class="system-node object-node" id="objectNode">
+                <div class="node-topline"><span class="node-tag">CLOSED OBJECT</span><span class="node-state" id="objectState">흡수 중</span></div>
+                <div class="node-core object-core"><span class="core-symbol">◇</span></div>
+                <h4>일반 물체</h4>
+                <p>열용량 · 무방비 평형</p>
+                <div class="node-meter"><span>내부 엔트로피</span><b id="objectNodeEntropy">2.40</b><div><i id="objectMeter"></i></div></div>
+              </article>
+
+              <div class="export-loop"><span>배출되는 엔트로피</span><i></i></div>
+              <div class="stage-caption"><span class="caption-line"></span><p>생명체는 물질과 에너지를 교환하며<br /><strong>내부의 질서를 계속 재구성합니다.</strong></p></div>
+            </div>
+
+            <div class="flow-strip">
+              <div><span class="flow-label">외부에서 들어온 엔트로피</span><strong id="flowIn">+0.258 <small>J/K·s</small></strong></div>
+              <div class="flow-arrow">→</div>
+              <div><span class="flow-label">생명체가 주변으로 내보낸 몫</span><strong class="mint-text" id="flowOut">+0.193 <small>J/K·s</small></strong></div>
+            </div>
+          </section>
+
+          <aside class="metrics-panel panel">
+            <div class="panel-heading">
+              <div>
+                <p class="section-index">03 / READOUT</p>
+                <h3>실시간 측정값</h3>
+              </div>
+              <span class="readout-label">ΔS / Δt</span>
+            </div>
+
+            <div class="metric-card accent-mint">
+              <div><span class="metric-title">생명체 내부</span><span class="metric-unit">S₁</span></div>
+              <strong id="lifeMetric">2.40</strong>
+              <p><span id="lifeDelta">+0.00</span> 변화량 · 항상성으로 완충</p>
+            </div>
+            <div class="metric-card accent-amber">
+              <div><span class="metric-title">일반 물체 내부</span><span class="metric-unit">S₁</span></div>
+              <strong id="objectMetric">2.40</strong>
+              <p><span id="objectDelta">+0.00</span> 변화량 · 그대로 누적</p>
+            </div>
+            <div class="metric-card accent-violet">
+              <div><span class="metric-title">전체 엔트로피</span><span class="metric-unit">S₁ + S₂</span></div>
+              <strong id="totalMetric">+0.00</strong>
+              <p>두 시스템 모두 <span class="positive-copy">비감소</span> 방향</p>
+            </div>
+
+            <div class="temperature-readout">
+              <div class="temp-heading"><span>열 상태</span><span>현재값</span></div>
+              <div class="temp-row"><span><i class="temp-dot life-dot"></i>생명체</span><strong id="lifeTemp">36.8°</strong><div class="temp-bar"><i id="lifeTempBar"></i></div></div>
+              <div class="temp-row"><span><i class="temp-dot object-dot"></i>일반 물체</span><strong id="objectTemp">24.0°</strong><div class="temp-bar"><i id="objectTempBar"></i></div></div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="chart-panel panel">
+          <div class="chart-header">
+            <div>
+              <p class="section-index">04 / LIVE GRAPH</p>
+              <h3 id="chartTitle">엔트로피 상태의 변화</h3>
+            </div>
+            <div class="chart-actions">
+              <div class="chart-toggle" role="group" aria-label="그래프 종류">
+                <button class="chart-mode active" data-chart="entropy">엔트로피</button>
+                <button class="chart-mode" data-chart="temperature">온도</button>
+              </div>
+              <div class="chart-legend"><span><i class="legend-life"></i>생명체 내부</span><span><i class="legend-object"></i>일반 물체 내부</span><span><i class="legend-total"></i>전체량</span></div>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="liveChart" aria-label="생명체와 일반 물체의 실시간 엔트로피 그래프"></canvas><div class="chart-empty" id="chartEmpty">시뮬레이션을 시작하면 흐름이 기록됩니다.</div></div>
+          <div class="chart-footer"><span>과거</span><span class="chart-insight"><i></i><span id="insightText">항상성이 내부 엔트로피를 완충하고 있습니다.</span></span><span>현재</span></div>
+        </section>
+
+        <section class="explain-strip">
+          <div class="explain-number">05</div>
+          <div><p class="section-index">WHAT TO NOTICE</p><h3>생명체는 제2법칙의 예외가 아닙니다.</h3></div>
+          <p>생명체의 내부 엔트로피가 안정적으로 보이는 것은 엔트로피를 없애기 때문이 아닙니다. 대사와 호르몬 조절로 외부와 물질·에너지를 교환하고, 그 과정에서 더 많은 엔트로피를 주변으로 내보내기 때문입니다.</p>
+        </section>
+      </main>
+
+      <footer><span>EDUCATIONAL MODEL / RELATIVE ENTROPY INDEX</span><span>모델 시간 <b id="footerTime">0.0 s</b></span></footer>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
+
