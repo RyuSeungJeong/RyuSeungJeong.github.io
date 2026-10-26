@@ -140,12 +140,21 @@ function updateChart() {
   const width = els.canvas.clientWidth; const height = els.canvas.clientHeight; if (!width || !height) return;
   ctx.clearRect(0, 0, width, height);
   const pad = { left: 42, right: 10, top: 12, bottom: 25 }; const chartW = width - pad.left - pad.right; const chartH = height - pad.top - pad.bottom;
-  ctx.font = "9px DM Mono, monospace"; ctx.lineWidth = 1; ctx.strokeStyle = "rgba(142, 169, 192, .12)"; ctx.fillStyle = "#5f7489";
-  for (let i = 0; i <= 4; i++) { const y = pad.top + chartH * i / 4; ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(width - pad.right, y); ctx.stroke(); ctx.fillText(state.chartMode === "entropy" ? `${(4.2 - i * .6).toFixed(1)}` : `${(45 - i * 8).toFixed(0)}°`, 7, y + 3); }
   const data = state.history;
-  if (!data.length) return;
   const values = state.chartMode === "entropy" ? data.flatMap(x => [x.life, x.object, x.lifeTotal, x.objectTotal]) : data.flatMap(x => [x.lifeTemp, x.objectTemp]);
-  const min = state.chartMode === "entropy" ? Math.min(1.8, ...values) : Math.min(12, ...values); const max = state.chartMode === "entropy" ? Math.max(4.4, ...values) : Math.max(45, ...values); const range = max - min || 1;
+  const maxValue = Math.max(0, ...values);
+  const min = 0;
+  const max = state.chartMode === "entropy" ? Math.max(4.4, Math.ceil(maxValue * 1.15 * 10) / 10) : Math.max(45, Math.ceil(maxValue / 5) * 5);
+  const range = max - min || 1;
+  ctx.font = "9px DM Mono, monospace"; ctx.lineWidth = 1; ctx.fillStyle = "#5f7489";
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + chartH * i / 4;
+    ctx.strokeStyle = i === 4 ? "rgba(142, 169, 192, .32)" : "rgba(142, 169, 192, .12)";
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(width - pad.right, y); ctx.stroke();
+    const tick = max * (1 - i / 4);
+    ctx.fillText(state.chartMode === "entropy" ? tick.toFixed(1) : `${tick.toFixed(0)}°`, 7, y + 3);
+  }
+  if (!data.length) return;
   const drawLine = (key, color, dashed = false) => { ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = dashed ? 1 : 2; ctx.setLineDash(dashed ? [4, 5] : []); data.forEach((item, index) => { const x = pad.left + (index / Math.max(1, data.length - 1)) * chartW; const y = pad.top + chartH - ((item[key] - min) / range) * chartH; index ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.stroke(); ctx.setLineDash([]); };
   if (state.chartMode === "entropy") { drawLine("life", "#59d6bf"); drawLine("object", "#f2b85f"); drawLine("lifeTotal", "#a28eff", true); drawLine("objectTotal", "#ef8270", true); } else { drawLine("lifeTemp", "#59d6bf"); drawLine("objectTemp", "#f2b85f"); }
 }
