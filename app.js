@@ -57,9 +57,13 @@ function formatTime(seconds) {
   return `${mins}:${secs}`;
 }
 
+function seedHistory() {
+  state.history = [{ t: 0, life: state.lifeS, object: state.objectS, lifeTotal: 2.4, objectTotal: 2.4, lifeTemp: state.lifeTemp, objectTemp: state.objectTemp }];
+}
+
 function resetSimulation() {
   state.elapsed = 0; state.lifeS = 2.4; state.objectS = 2.4; state.lifeTotal = 0; state.objectTotal = 0;
-  state.lifeTemp = 36.8; state.objectTemp = 24; state.history = [];
+  state.lifeTemp = 36.8; state.objectTemp = 24; seedHistory();
   render();
 }
 
@@ -90,7 +94,7 @@ function step(dt) {
   state.objectTemp += (objectTarget - state.objectTemp) * Math.min(1, 0.12 * seconds);
   state.lifeTemp += (lifeTarget - state.lifeTemp) * Math.min(1, (0.08 + homeostasis * 0.19) * seconds);
   state.history.push({ t: state.elapsed, life: state.lifeS, object: state.objectS, lifeTotal: 2.4 + state.lifeTotal, objectTotal: 2.4 + state.objectTotal, lifeTemp: state.lifeTemp, objectTemp: state.objectTemp });
-  if (state.history.length > 150) state.history.shift();
+  if (state.history.length > 3600) state.history.shift();
   state._deltas = { lifeInternalDelta, objectInternalDelta, lifeExternalDelta, objectExternalDelta, lifeExternalRate, flux, ambientTarget };
 }
 
@@ -183,5 +187,6 @@ els.playButton.addEventListener("click", () => { state.running = !state.running;
 els.resetButton.addEventListener("click", resetSimulation);
 window.addEventListener("resize", resizeCanvas);
 
+seedHistory();
 setRangeFill(els.inputSlider, -80, 180); setRangeFill(els.homeostasisSlider, 0, 100); setRangeFill(els.speedSlider, .25, 3); resizeCanvas(); render(); requestAnimationFrame(loop);
 
